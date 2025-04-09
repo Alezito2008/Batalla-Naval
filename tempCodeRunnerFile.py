@@ -1,1 +1,0 @@
-.tablero.append(Estados.AGUA)

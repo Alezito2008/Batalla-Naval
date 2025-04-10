@@ -1,5 +1,8 @@
 from enum import Enum
 import string
+import re
+
+LETRAS = string.ascii_uppercase
 
 type Punto = tuple[int, int]
 
@@ -12,7 +15,7 @@ class Estados(Enum):
 class Direcciones(Enum):
     """Direcciones con sus respectivos desplazamientos"""
     ARRIBA = (-1, 0)
-    ABAJO = (1, 1)
+    ABAJO = (1, 0)
     IZQUIERDA = (0, -1)
     DERECHA = (0, 1)
 
@@ -27,6 +30,13 @@ class Barco:
         self.disparado: set[Punto] = set()
 
     def disparar(self, coordenada: Punto) -> Estados:
+        """
+        Llamado al ser disparado
+        Args:
+            coordenada (Punto): Coordenada en la que fue disparado
+            Returns:
+                Estados: Devuelve `Estados.DISPARADO` hasta que no quede ninguna parte sin disparar y ahí devuelve `Estados.HUNDIDO`
+        """
         self.disparado.add(coordenada)
         if len(self.posiciones) != len(self.disparado):
             return Estados.DISPARADO
@@ -70,7 +80,7 @@ class Juego:
     def __str__(self) -> str:
         tablero_texto: str = '   '
         # agregar letras
-        tablero_texto += ''.join([f' {i} ' for i in string.ascii_uppercase[:self.ancho]]) + '\n'
+        tablero_texto += ''.join([f' {i} ' for i in LETRAS[:self.ancho]]) + '\n'
         # iterar por cada fila
         for fila in range(self.alto):
             # agregar numeros
@@ -186,7 +196,7 @@ class Juego:
             bool: True si se acierta, de lo contrario False
         """
         casilla = self.obtener_casilla(coords)
-        if casilla.estado == Estados.BARCO:
+        if casilla.estado == Estados.BARCO and casilla.barco != None:
             estado_barco: Estados = casilla.barco.disparar(coords)
             if estado_barco == Estados.DISPARADO:
                 casilla.estado = Estados.DISPARADO
@@ -197,7 +207,26 @@ class Juego:
             return True
         return False
 
+def letras_a_coordenadas(letras: str) -> Punto:
+    """
+    Convierte entrada de letras y números a una coordenada
+    Args:
+        letras (str): Letras y números que serán usados como coordenada
+    Ejemplo::
 
+        letras_a_coordenadas('C2') // (6, 3)
+        letras_a_coordenadas('2C') // (6, 3)
+    """
+    match_numeros: re.Match[str] | None = re.search(r'\d+', letras)
+    match_letras: re.Match[str] | None = re.search(r'[a-zA-Z]', letras)
+    if match_numeros is None:
+        raise ValueError(f'No se encontraron números en {letras}')
+    if match_letras is None:
+        raise ValueError(f'No se encontraron letras en {letras}')
+    
+    x: int = int(match_numeros.group(0))
+    y: int = LETRAS.index(match_letras.group(0).upper())
+    return (x, y)
 
 juego = Juego(
     ancho=20,
@@ -205,12 +234,7 @@ juego = Juego(
     disparos=20
 )
 
-juego.agregar_barco(punto_inicio=(3, 2), largo=5, direccion=Direcciones.DERECHA)
-
-juego.disparar((3, 2))
-juego.disparar((3, 3))
-juego.disparar((3, 4))
-juego.disparar((3, 5))
+juego.agregar_barco(punto_inicio=(0, 1), largo=5, direccion=Direcciones.DERECHA)
 
 print(juego)
 

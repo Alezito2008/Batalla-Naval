@@ -1,4 +1,5 @@
 from enum import Enum
+import string
 
 type Punto = tuple[int, int]
 
@@ -67,12 +68,16 @@ class Juego:
 
     # formato para imprimir
     def __str__(self) -> str:
-        tablero_texto: str = ''
+        tablero_texto: str = '   '
+        # agregar letras
+        tablero_texto += ''.join([f' {i} ' for i in string.ascii_uppercase[:self.ancho]]) + '\n'
         # iterar por cada fila
         for fila in range(self.alto):
+            # agregar numeros
+            tablero_texto += f' {fila} '
             # iterar por cada elemento de cada fila
             for columna in range(self.ancho):
-                tablero_texto += str(self.obtener_casilla((fila, columna)))
+                tablero_texto += str(self.obtener_casilla((fila, columna))) + ' '
             tablero_texto += '\n'
         return tablero_texto
     

@@ -1,3 +1,6 @@
+import sys
+sys.path.append(".")
+
 from enums import Direcciones
 from tablero import Juego
 

@@ -11,7 +11,7 @@ class Estados(Enum):
 class Direcciones(Enum):
     """Direcciones con sus respectivos desplazamientos"""
     ARRIBA = (-1, 0)
-    ABAJO = (1, 0)
+    ABAJO = (1, 1)
     IZQUIERDA = (0, -1)
     DERECHA = (0, 1)
 
@@ -25,10 +25,16 @@ class Barco:
         self.posiciones: list[Punto] = posiciones
         self.disparado: set[Punto] = set()
 
+    def disparar(self, coordenada: Punto) -> Estados:
+        self.disparado.add(coordenada)
+        if len(self.posiciones) != len(self.disparado):
+            return Estados.DISPARADO
+        return Estados.HUNDIDO
 
 class Casilla:
     def __init__(self) -> None:
         self.estado: Estados = Estados.AGUA
+        self.barco: Barco | None = None
 
     def __str__(self) -> str:
         return self.estado.value
@@ -85,7 +91,7 @@ class Juego:
         """
         Comprueba si un punto está dentro del tablero.
         Args:
-            coords (Punto): Las coordenadas de la casilla a obtener.
+            coords (Punto): Las coordenadas de la casilla a comprobar.
         Returns:
             bool: True si está dentro, de lo contrario False.
         """
@@ -96,7 +102,7 @@ class Juego:
         """
         Valida si las coordenadas dadas están dentro del tablero.
         Args:
-            coords (Punto): Las coordenadas de la casilla a obtener.
+            coords (Punto): Las coordenadas de la casilla a validar.
         Raises:
             IndexError: Si el punto está fuera de la tabla.
         """
@@ -108,7 +114,7 @@ class Juego:
         """
         Cambia el estado de una casilla.
         Args:
-            coords (Punto): Las coordenadas de la casilla a obtener.
+            coords (Punto): Las coordenadas de la casilla que cambiará de estado.
             estado (Estados): Estado a establecer la casilla.
         Raises:
             ValueError: Si el argumento `estado` no es del tipo `Estados`.
@@ -145,34 +151,61 @@ class Juego:
 
         # compara la coordenada inicial con cada elemento que sigue
         for i in range(largo):
-            posX = x + dx * i
-            posY = y + dy * i
+            # consigue la nueva posicion
+            posX: int = x + dx * i
+            posY: int = y + dy * i
+
+            casilla: Casilla = self.obtener_casilla((posX, posY))
 
             if not self.esta_adentro((posX, posY)):
                 raise IndexError("La posición no está dentro del tablero")
-            if self.obtener_casilla((posX, posY)).estado != Estados.AGUA:
+            if casilla.estado != Estados.AGUA:
                 raise IndexError(f"Ya hay otro barco en la posición (x={posX}, y={posY})")
             
+            # si salió todo bien lo agrega a `posiciones`
             posiciones.append((posX, posY))
             
-        self.barcos.append(Barco(posiciones))
+        nuevo_barco: Barco = Barco(posiciones)
+        self.barcos.append(nuevo_barco)
+
         for posicion in posiciones:
             self.cambiar_estado(posicion, Estados.BARCO)
+            self.obtener_casilla(posicion).barco = nuevo_barco
 
-    # TODO poder disparar
-    def disparar(self, coords: Punto) -> None:
-        x, y = coords
+    def disparar(self, coords: Punto) -> bool:
+        """
+        Dispara a un barco
+        Args:
+            coords (Punto): Las coordenadas de la casilla a disparar.
+        Returns:
+            bool: True si se acierta, de lo contrario False
+        """
+        casilla = self.obtener_casilla(coords)
+        if casilla.estado == Estados.BARCO:
+            estado_barco: Estados = casilla.barco.disparar(coords)
+            if estado_barco == Estados.DISPARADO:
+                casilla.estado = Estados.DISPARADO
+            else:
+                for i in casilla.barco.posiciones:
+                    self.obtener_casilla(i).estado = Estados.HUNDIDO
+            self.disparos -= 1
+            return True
+        return False
 
 
-        
 
 juego = Juego(
-    ancho=10,
+    ancho=20,
     alto=10,
     disparos=20
 )
 
 juego.agregar_barco(punto_inicio=(3, 2), largo=5, direccion=Direcciones.DERECHA)
+
+juego.disparar((3, 2))
+juego.disparar((3, 3))
+juego.disparar((3, 4))
+juego.disparar((3, 5))
 
 print(juego)
 

@@ -3,6 +3,7 @@ sys.path.append(".")
 
 from enums import Direcciones
 from tablero import Juego
+from utils import letras_a_coordenadas
 
 def jugar():
     # TODO: Poder ingresar los datos y jugar
@@ -13,6 +14,13 @@ def jugar():
     )
 
     juego.agregar_barco(punto_inicio=(0, 1), largo=5, direccion=Direcciones.DERECHA)
+    juego.disparar(letras_a_coordenadas('B0'))
+    juego.disparar(letras_a_coordenadas('C0'))
+    juego.disparar(letras_a_coordenadas('D0'))
+    juego.disparar(letras_a_coordenadas('E0'))
+    juego.disparar(letras_a_coordenadas('F0'))
+
+    juego.disparar(letras_a_coordenadas('H3'))
 
     print(juego)
 

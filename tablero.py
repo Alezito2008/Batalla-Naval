@@ -17,16 +17,16 @@ class Barco:
         Args:
             coordenada (Punto): Coordenada en la que fue disparado
             Returns:
-                Estados: Devuelve `Estados.DISPARADO` hasta que no quede ninguna parte sin disparar y ahí devuelve `Estados.HUNDIDO`
+                Estados: Devuelve `Estados.BARCO_DISPARADO` hasta que no quede ninguna parte sin disparar y ahí devuelve `Estados.HUNDIDO`
         """
         self.disparado.add(coordenada)
         if len(self.posiciones) != len(self.disparado):
-            return Estados.DISPARADO
+            return Estados.BARCO_DISPARADO
         return Estados.HUNDIDO
 
 class Casilla:
     def __init__(self) -> None:
-        self.estado: Estados = Estados.AGUA
+        self.estado: Estados = Estados.MAR
         self.barco: Barco | None = None
 
     def __str__(self) -> str:
@@ -157,7 +157,7 @@ class Juego:
 
             if not self.esta_adentro((posX, posY)):
                 raise IndexError("La posición no está dentro del tablero")
-            if casilla.estado != Estados.AGUA:
+            if casilla.estado != Estados.MAR:
                 raise IndexError(f"Ya hay otro barco en la posición (x={posX}, y={posY})")
             
             # si salió todo bien lo agrega a `posiciones`
@@ -176,16 +176,20 @@ class Juego:
         Args:
             coords (Punto): Las coordenadas de la casilla a disparar.
         Returns:
-            bool: True si se acierta, de lo contrario False
+            bool: True si se disparó en una nueva posición, de lo contrario False
         """
         casilla = self.obtener_casilla(coords)
         if casilla.estado == Estados.BARCO and casilla.barco != None:
             estado_barco: Estados = casilla.barco.disparar(coords)
-            if estado_barco == Estados.DISPARADO:
-                casilla.estado = Estados.DISPARADO
+            if estado_barco == Estados.BARCO_DISPARADO:
+                casilla.estado = Estados.BARCO_DISPARADO
             else:
                 for i in casilla.barco.posiciones:
                     self.obtener_casilla(i).estado = Estados.HUNDIDO
+            self.disparos -= 1
+            return True
+        elif casilla.estado == Estados.MAR:
+            casilla.estado = Estados.MAR_DISPARADO
             self.disparos -= 1
             return True
         return False

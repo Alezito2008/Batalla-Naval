@@ -1,10 +1,11 @@
 from enum import Enum
 
 class Estados(Enum):
-    AGUA = '🌊'
+    MAR = '🌊'
     BARCO = '🚢'
-    DISPARADO = '🔫'
-    HUNDIDO = '❌'
+    BARCO_DISPARADO = '🔫'
+    MAR_DISPARADO = '❌'
+    HUNDIDO = '💥'
 
 class Direcciones(Enum):
     """Direcciones con sus respectivos desplazamientos"""

@@ -1,6 +1,9 @@
 from utils import Punto, LETRAS
 from enums import Estados, Direcciones
 
+from itertools import product
+import random
+
 class Barco:
     """
     Crea un barco
@@ -32,7 +35,7 @@ class Casilla:
     def __str__(self) -> str:
         return self.estado.value
 
-class Juego:
+class Tablero:
     """
     Inicializa un juego con un tablero vacío.
 
@@ -71,7 +74,6 @@ class Juego:
             for columna in range(self.ancho):
                 tablero_texto += str(self.obtener_casilla((fila, columna))) + ' '
             tablero_texto += '\n'
-        tablero_texto += f'\n🔫 {self.disparos}'
         return tablero_texto
     
     def obtener_casilla(self, coords: Punto) -> Casilla:
@@ -193,3 +195,34 @@ class Juego:
             self.disparos -= 1
             return True
         return False
+    
+    def colocar_barcos(self, cantidad: int, largo: int) -> None:
+        """
+        Coloca barcos aleatoriamente en el tablero.
+        
+        Barcos son colocados aleatoriamente en el tablero. Se busca cada posición y dirección en el tablero, se randomiza y cicla por cada uno hasta que se hayan puesto los barcos
+        Args:
+            cantidad (int): Cantidad de barcos a colocar.
+            largo_maximo (int): Largo máximo de los barcos.
+        """
+        posibles_posiciones: list[tuple[Punto, Direcciones]] = []
+        barcos_agregados: int = 0
+        # Obtener combinaciones: https://stackoverflow.com/questions/10975045/python-return-combinations-of-a-list-of-ranges
+        for x, y in product(range(self.ancho), range(self.alto)):
+            # por cada punto del tablero
+            for direccion in Direcciones:
+                posibles_posiciones.append(((x, y), direccion))
+
+        random.shuffle(posibles_posiciones)
+
+        for punto, direccion in posibles_posiciones:
+            try:
+                self.agregar_barco(punto_inicio=punto, direccion=direccion, largo=largo)
+                barcos_agregados += 1
+                if barcos_agregados == cantidad:
+                    break
+            except IndexError:
+                continue
+
+        if barcos_agregados != cantidad:
+            print(f"Solo se pudieron colocar {barcos_agregados} / {cantidad} barcos")

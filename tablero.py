@@ -47,7 +47,8 @@ class Tablero:
     """
     def __init__(self, ancho: int, alto: int, disparos: int) -> None:
         self.barcos: list[Barco] = []
-        self.disparos: int = disparos
+        self.disparos_restantes: int = disparos
+        self.barcos_hundidos: int = 0
 
         self.ancho: int = ancho
         self.alto: int = alto
@@ -179,20 +180,26 @@ class Tablero:
             coords (Punto): Las coordenadas de la casilla a disparar.
         Returns:
             bool: True si se disparó en una nueva posición, de lo contrario False
+        Raises:
+            IndexError: Si el punto está fuera de la tabla.
         """
+        self.validar_coordenadas(coords)
+
         casilla = self.obtener_casilla(coords)
         if casilla.estado == Estados.BARCO and casilla.barco != None:
             estado_barco: Estados = casilla.barco.disparar(coords)
             if estado_barco == Estados.BARCO_DISPARADO:
                 casilla.estado = Estados.BARCO_DISPARADO
             else:
+                # si de hundió
+                self.barcos_hundidos += 1
                 for i in casilla.barco.posiciones:
                     self.obtener_casilla(i).estado = Estados.HUNDIDO
-            self.disparos -= 1
+            self.disparos_restantes -= 1
             return True
         elif casilla.estado == Estados.MAR:
             casilla.estado = Estados.MAR_DISPARADO
-            self.disparos -= 1
+            self.disparos_restantes -= 1
             return True
         return False
     
@@ -226,3 +233,6 @@ class Tablero:
 
         if barcos_agregados != cantidad:
             print(f"Solo se pudieron colocar {barcos_agregados} / {cantidad} barcos")
+
+if __name__ == "__main__":
+    print("⚠️ Este archivo es un módulo, ejecutar `main.py`")

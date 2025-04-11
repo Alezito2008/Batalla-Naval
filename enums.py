@@ -3,7 +3,7 @@ from enum import Enum
 class Estados(Enum):
     MAR = '🌊'
     BARCO = '🚢'
-    BARCO_DISPARADO = '🔫'
+    BARCO_DISPARADO = '✅'
     MAR_DISPARADO = '❌'
     HUNDIDO = '💥'
 

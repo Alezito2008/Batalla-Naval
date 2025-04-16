@@ -87,7 +87,10 @@ class Juego:
 
         while not self._juego_terminado:
             for turno, jugador_actual in enumerate(self.jugadores):
-                oponente = self.jugadores[(turno + 1) % 2]
+                if self._es_multijugador:
+                    oponente = self.jugadores[(turno + 1) % 2]
+                else:
+                    oponente = self.jugadores[0]
 
                 self._mostrar_tablero(oponente)
                 print(f"Turno de {jugador_actual.nombre}")
@@ -97,10 +100,11 @@ class Juego:
                     oponente.tablero.disparar(coords)
                 except IndexError:
                     print(IndexError)
-
-                self._mostrar_tablero(oponente)
-                print("Presionar Enter para continuar")
-                input()
+                
+                if self._es_multijugador:
+                    self._mostrar_tablero(oponente)
+                    print("Presionar Enter para continuar")
+                    input()
 
                 if oponente.tablero.barcos_hundidos == self.cantidad_barcos:
                     print(f"¡{jugador_actual.nombre} ganó! 🎉")

@@ -186,15 +186,18 @@ class Tablero:
         self.validar_coordenadas(coords)
 
         casilla = self.obtener_casilla(coords)
-        if casilla.estado == Estados.BARCO and casilla.barco != None:
+
+        if casilla.estado == Estados.BARCO and casilla.barco is not None:
+            # disparar y obtener el estado luego de ser disparado
             estado_barco: Estados = casilla.barco.disparar(coords)
+
             if estado_barco == Estados.BARCO_DISPARADO:
                 casilla.estado = Estados.BARCO_DISPARADO
             else:
-                # si de hundió
+                # si el barco se hundió
                 self.barcos_hundidos += 1
-                for i in casilla.barco.posiciones:
-                    self.obtener_casilla(i).estado = Estados.HUNDIDO
+                for posicion in casilla.barco.posiciones:
+                    self.obtener_casilla(posicion).estado = Estados.HUNDIDO
             self.disparos_restantes -= 1
             return True
         elif casilla.estado == Estados.MAR:
@@ -203,7 +206,7 @@ class Tablero:
             return True
         return False
     
-    def colocar_barcos(self, cantidad: int, largo: int) -> None:
+    def colocar_barcos_random(self, cantidad: int, largo: int) -> None:
         """
         Coloca barcos aleatoriamente en el tablero.
         

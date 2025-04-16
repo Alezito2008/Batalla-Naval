@@ -32,13 +32,21 @@ class Juego:
         limpiar_pantalla()
 
     def _crear_jugador(self, jugador_num: int) -> Jugador:
-        """Crea un jugador con nombre y tablero"""
+        """
+        Crea un jugador con nombre y tablero
+        Args:
+            jugador_num (int): Número de jugador
+        """
         nombre: str = pedir_nombre(f"Nombre del jugador {jugador_num}: ", f"Jugador {jugador_num}")
         tablero = Tablero(ancho=self.ancho, alto=self.alto, disparos=self.disparos)
         return Jugador(nombre=nombre, tablero=tablero)
 
     def _mostrar_tablero(self, jugador: Jugador) -> None:
-        """Muestra el tablero actualizado junto con la información del juego"""
+        """
+        Muestra el tablero actualizado junto con la información del juego
+        Args:
+            jugador (Jugador): Jugador a ser mostrado su tablero
+        """
         limpiar_pantalla()
         print(jugador.tablero)
         print('---' * self.ancho + '--')
@@ -46,7 +54,11 @@ class Juego:
         print('---' * self.ancho + '--')
 
     def _poner_barcos(self, jugador: Jugador) -> None:
-        """Coloca los barcos en el tablero del jugador"""
+        """
+        Coloca los barcos en el tablero del jugador
+        Args:
+            jugador (Jugador): Jugador en el cual en su tablero serán colocados los barcos
+        """
         if preguntar_si_o_no("🚢 ¿Colocar barcos aleatoriamente? (s/n): ", "s"):
             jugador.tablero.colocar_barcos_random(cantidad=self.cantidad_barcos, largo=self.largo_barcos)
             return

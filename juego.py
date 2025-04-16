@@ -1,7 +1,7 @@
 from tablero import Tablero
 from jugador import Jugador
 from enums import Direcciones
-from utils import letras_a_coordenadas, limpiar_pantalla, pedir_entero, pedir_coordenadas, pedir_nombre, pedir_direccion, preguntar_si_o_no, Punto
+from utils import limpiar_pantalla, pedir_entero, pedir_coordenadas, pedir_nombre, pedir_direccion, preguntar_si_o_no, Punto
 
 class Juego:
     def __init__(self) -> None:
@@ -111,23 +111,6 @@ class Juego:
                     print("Te quedaste sin disparos 😣")
                     self._juego_terminado = True
                     break
-
-
-
-        # while not self._juego_terminado:
-
-        #     coords = pedir_coordenadas()
-
-        #     try:
-        #         self.tablero.disparar(coords)
-        #     except IndexError:
-        #         print(IndexError)
-
-        #     self._mostrar_tablero()
-
-        #     if self.tablero.disparos_restantes <= 0:
-        #         print("Te quedaste sin disparos 😣")
-        #         self._juego_terminado = True
 
 if __name__ == "__main__":
     print("⚠️ Este archivo es un módulo, ejecutar `main.py`")
